@@ -69,6 +69,8 @@ RULES = (
     ),
     # The MCP package bundles the recipes index and its tests read it.
     ({"docs", "repro", "mcp"}, ("docs/site/public/api/recipes.json",)),
+    # The changes job runs its self-test on every pull request.
+    (NONE, ("scripts/schedule-watch.py", ".github/workflows/schedule-watch.yml")),
     (
         {"docs", "repro"},
         (
@@ -128,6 +130,8 @@ def self_test():
         ".github/labeler.yml": NONE,
         ".github/workflows/claude-review.yml": NONE,
         ".github/workflows/terraform-plan.yml": NONE,
+        ".github/workflows/schedule-watch.yml": NONE,
+        "scripts/schedule-watch.py": NONE,
         "ruff.toml": NONE,
         ".github/workflows/ci.yml": ALL,
         "scripts/ci-changes.py": ALL,
