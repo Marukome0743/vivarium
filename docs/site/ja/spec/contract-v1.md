@@ -34,7 +34,9 @@ DOM/グローバルサーフェスは両レイヤーで同じだ。ファイル�
 
 v1 にはエラーの verdict がないため、バグを確かめる前に失敗した実行も `unreproduced` を
 報告する。バグがない場合とは出力で見分ける。Layer 2 では、終了コード 0（`reproduced`）と
-1（`unreproduced`）だけが verdict になる。それ以外の終了コードはエラーで、`verdict.json` を
+1（`unreproduced`）だけが verdict になり、さらに同じ内容の `verdict=reproduced` または
+`verdict=unreproduced` の行を標準エラーに出す必要がある。該当する行が複数あれば最後の行を使う。
+それ以外の終了コード、行がない場合、行が終了コードと食い違う場合はエラーで、`verdict.json` を
 書かずにキャプチャが失敗する。
 
 `pending` は再現コード（Layer 1）または verdict スナップショットのフェッチ
@@ -280,6 +282,7 @@ CI はこれらの条項を機械的に強制する——
 | 5 | 2026-11-07 | 現在 evidence サーフェスを出力するページがないこと、レシピが使う `runtime.name` の値を明記。形式の変更はなし。 |
 | 6 | 2026-11-07 | v1 にはエラーの verdict がないため、失敗した実行も `unreproduced` を報告することを明記。形式の変更はなし。 |
 | 7 | 2026-11-07 | **破壊的変更だが v1 に留める。** Layer 2 で 0 と 1 以外の終了コードを、`unreproduced` ではなくエラーとして扱う。`vivarium-verdict.yml` と `verdict:capture-layer2` は `verdict.json` を書かずに失敗する。イメージのクラッシュによって成功していた `expected_verdict: unreproduced` の利用側ジョブは、失敗するようになる。`verdict.json` の形式は変わらず、公開済みの Vivarium MCP のどのリリースもこれに依存していない。 |
+| 8 | 2026-11-07 | **破壊的変更だが v1 に留める。** Layer 2 の実行は、終了コードと一致する `verdict=reproduced` または `verdict=unreproduced` の行も標準エラーに出す必要がある。`set -e` などでその行より前に失敗したスクリプトは、`unreproduced` ではなくエラーになる。Vivarium のレシピはすべてこの行をすでに出しているので、公開済みのイメージは変わらない。 |
 
 ## 参照
 

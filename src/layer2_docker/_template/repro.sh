@@ -9,6 +9,8 @@
 #                            landed, or the environment differs).
 #   exit 2 -> error — the reproduction could not run, so no verdict
 #                     is recorded.
+# Before exit 0 or 1, print a matching verdict=reproduced or
+# verdict=unreproduced line on stderr; CI records no verdict without it.
 
 set -uo pipefail
 

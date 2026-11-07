@@ -45,9 +45,9 @@ branch-fix is therefore expected to flip the verdict to
 `unreproduced` (a sentinel page tracking an upstream-fix-detected
 event), a contributor is unlikely to need this workflow at all.
 
-An exit code other than 0 or 1 fails the capture without a verdict. A
-branch-fix image whose script fails and exits 1 still flips the verdict
-to `unreproduced`, so check the captured output as well.
+A branch-fix image whose script crashes, exits with a code other than
+0 or 1, or prints no matching `verdict=` line on stderr fails the
+capture without a verdict, so a broken fix cannot pass as a working one.
 
 ## Artefact
 
