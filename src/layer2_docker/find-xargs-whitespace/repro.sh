@@ -9,13 +9,15 @@
 # uses NUL bytes as separators, which can never appear in a
 # filename.
 #
-# Verdict semantics (catalogue model):
-#   exit 0 -> pass — naive form mishandles whitespace AND -print0
-#                    form handles it correctly. The surprise
-#                    reproduces.
-#   exit 1 -> fail — naive form silently happens to work (which
-#                    would mean xargs default semantics changed),
-#                    or runtime errored.
+# Verdict semantics:
+#   exit 0 -> reproduced — naive form mishandles whitespace AND
+#                          -print0 form handles it correctly. The
+#                          surprise reproduces.
+#   exit 1 -> unreproduced — naive form silently happens to work
+#                            (which would mean xargs default
+#                            semantics changed).
+# Exit 0 and 1 each print a matching verdict= line on stderr first.
+# An error that stops the script before that line records no verdict.
 
 set -uo pipefail
 
