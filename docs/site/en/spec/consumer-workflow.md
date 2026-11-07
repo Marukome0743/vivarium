@@ -47,10 +47,12 @@ the reproduction is doing its job. `unreproduced` means the bug
 [Contract v1: Verdict semantics](./contract-v1.md#verdict-semantics)
 for the full reasoning.
 
-Exit code 0 is `reproduced` and 1 is `unreproduced`. Any other exit
-code, such as Docker failing to start the image or the container being
-killed, fails the job without a verdict. A script that fails and exits 1
-still reads as `unreproduced`, so check the captured output as well.
+Exit code 0 is `reproduced` and 1 is `unreproduced`, and the run must
+also print a matching `verdict=reproduced` or `verdict=unreproduced`
+line on stderr. Anything else fails the job without a verdict: another
+exit code, such as Docker failing to start the image or the container
+being killed, a missing line, or a line that disagrees with the exit
+code.
 
 Consumers that want a "this bug is fixed" alert can therefore
 write:

@@ -45,9 +45,10 @@ jobs:
 完全な説明は
 [Contract v1: Verdict セマンティクス](./contract-v1.md#verdict-セマンティクス)を参照。
 
-終了コード 0 は `reproduced`、1 は `unreproduced` になる。Docker がイメージを起動できない、
-コンテナが強制終了されたなど、それ以外の終了コードでは verdict を出さずにジョブが失敗する。
-失敗して 1 で終わるスクリプトは `unreproduced` のままなので、キャプチャした出力も確認すること。
+終了コード 0 は `reproduced`、1 は `unreproduced` になり、さらに同じ内容の
+`verdict=reproduced` または `verdict=unreproduced` の行を標準エラーに出す必要がある。
+Docker がイメージを起動できない、コンテナが強制終了されたなどのそれ以外の終了コード、
+行がない場合、行が終了コードと食い違う場合は、verdict を出さずにジョブが失敗する。
 
 「このバグは修正された」アラートを望むコンシューマーは:
 

@@ -103,18 +103,27 @@ jobs:
           exit_code=$?
           set -e
 
+          no_verdict() {
+            echo "::error::${IMAGE} $1, so no verdict was recorded."
+            echo "--- stdout"
+            cat "$stdout_file"
+            echo "--- stderr (last 4096 bytes)"
+            tail -c 4096 "$stderr_file"
+            exit 1
+          }
+
           case "$exit_code" in
             0) verdict="reproduced" ;;
             1) verdict="unreproduced" ;;
-            *)
-              echo "::error::${IMAGE} exited ${exit_code}; only 0 (reproduced) and 1 (unreproduced) are verdicts, so none was recorded."
-              echo "--- stdout"
-              cat "$stdout_file"
-              echo "--- stderr (last 4096 bytes)"
-              tail -c 4096 "$stderr_file"
-              exit 1
-              ;;
+            *) no_verdict "exited ${exit_code}; only 0 (reproduced) and 1 (unreproduced) are verdicts" ;;
           esac
+
+          stated="$(grep -E '^verdict=(reproduced|unreproduced)([[:space:]]|$)' "$stderr_file" | tail -n 1 | sed -E 's/^verdict=(reproduced|unreproduced).*/\1/' || true)"
+          if [ -z "$stated" ]; then
+            no_verdict "exited ${exit_code} but printed no verdict= line on stderr"
+          elif [ "$stated" != "$verdict" ]; then
+            no_verdict "printed verdict=${stated} but exited ${exit_code}"
+          fi
 
           digest="$(docker image inspect \
             --format='{{if .RepoDigests}}{{index .RepoDigests 0}}{{else}}{{.Id}}{{end}}' \

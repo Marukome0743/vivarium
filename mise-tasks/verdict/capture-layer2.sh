@@ -28,18 +28,27 @@ docker run --rm "$image_ref" >"$stdout_file" 2>"$stderr_file"
 exit_code=$?
 set -e
 
+no_verdict() {
+  echo "::error::${image_ref} $1, so no verdict was recorded." >&2
+  echo "--- stdout" >&2
+  cat "$stdout_file" >&2
+  echo "--- stderr (last 4096 bytes)" >&2
+  tail -c 4096 "$stderr_file" >&2
+  exit 1
+}
+
 case "$exit_code" in
   0) verdict="reproduced" ;;
   1) verdict="unreproduced" ;;
-  *)
-    echo "::error::${image_ref} exited ${exit_code}; only 0 (reproduced) and 1 (unreproduced) are verdicts, so none was recorded." >&2
-    echo "--- stdout" >&2
-    cat "$stdout_file" >&2
-    echo "--- stderr (last 4096 bytes)" >&2
-    tail -c 4096 "$stderr_file" >&2
-    exit 1
-    ;;
+  *) no_verdict "exited ${exit_code}; only 0 (reproduced) and 1 (unreproduced) are verdicts" ;;
 esac
+
+stated="$(grep -E '^verdict=(reproduced|unreproduced)([[:space:]]|$)' "$stderr_file" | tail -n 1 | sed -E 's/^verdict=(reproduced|unreproduced).*/\1/' || true)"
+if [ -z "$stated" ]; then
+  no_verdict "exited ${exit_code} but printed no verdict= line on stderr"
+elif [ "$stated" != "$verdict" ]; then
+  no_verdict "printed verdict=${stated} but exited ${exit_code}"
+fi
 
 captured_at="$(date -u +%Y-%m-%dT%H:%M:%SZ)"
 
