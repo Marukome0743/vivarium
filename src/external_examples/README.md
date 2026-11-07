@@ -12,6 +12,9 @@
 > manifests point at vivarium's own publicly-deployed pages and
 > GHCR images so they are runnable as written rather than just
 > shape-valid.
+>
+> **Status:** nothing in Vivarium reads these manifests yet. CI only validates
+> them against the schema.
 
 ---
 
@@ -64,7 +67,3 @@ the manifest's `slug` field — they are conceptually separate
 (directory name = "this example", manifest slug = "the
 reproduction the example describes"). In practice keeping them
 similar is helpful.
-
-## Phase context
-
-Manifest format is locked at v1.
